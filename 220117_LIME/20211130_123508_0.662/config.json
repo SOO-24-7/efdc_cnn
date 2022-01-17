@@ -1,0 +1,239 @@
+{
+    "config": {
+        "drop_remainder": false,
+        "category": "DL",
+        "mode": "regression",
+        "forecast_len": 1,
+        "x_transformation": null,
+        "lookback": 1,
+        "batch_size": 32,
+        "train_data": null,
+        "val_fraction": 0.2,
+        "val_data": null,
+        "test_fraction": 0.2,
+        "save": false,
+        "allow_nan_labels": 0,
+        "nan_filler": null,
+        "seed": 313,
+        "forecast_step": 0,
+        "input_step": 1,
+        "known_future_inputs": false,
+        "input_features": null,
+        "output_features": null,
+        "intervals": null,
+        "verbosity": 1,
+        "teacher_forcing": false,
+        "dataset_args": {},
+        "model": {
+            "layers": {
+                "Input": {
+                    "shape": [
+                        3,
+                        3,
+                        8
+                    ],
+                    "name": "EFDC_inputs"
+                },
+                "Conv2D": {
+                    "filters": 15,
+                    "kernel_size": [
+                        2,
+                        2
+                    ],
+                    "strides": [
+                        1,
+                        1
+                    ],
+                    "padding": "same",
+                    "name": "Conv2D"
+                },
+                "BatchNormalization": {
+                    "epsilon": 0.001,
+                    "center": true,
+                    "scale": false,
+                    "momentum": 0.9,
+                    "name": "BatchNormalization"
+                },
+                "crelu": {
+                    "name": "crelu"
+                },
+                "Conv2D_2": {
+                    "filters": 17,
+                    "kernel_size": [
+                        2,
+                        2
+                    ],
+                    "padding": "same",
+                    "name": "Conv2D_2"
+                },
+                "BatchNormalization_2": {
+                    "epsilon": 0.001,
+                    "center": true,
+                    "scale": false,
+                    "momentum": 0.9,
+                    "name": "BatchNormalization_2"
+                },
+                "crelu_2": {
+                    "name": "crelu_2"
+                },
+                "Conv2D_3": {
+                    "filters": 17,
+                    "kernel_size": [
+                        2,
+                        2
+                    ],
+                    "padding": "same",
+                    "name": "Conv2D_3"
+                },
+                "BatchNormalization_3": {
+                    "epsilon": 0.001,
+                    "center": true,
+                    "scale": false,
+                    "momentum": 0.9,
+                    "name": "BatchNormalization_3"
+                },
+                "crelu_3": {
+                    "name": "crelu_3"
+                },
+                "Conv2D_4": {
+                    "filters": 17,
+                    "kernel_size": [
+                        2,
+                        2
+                    ],
+                    "padding": "same",
+                    "name": "Conv2D_4"
+                },
+                "BatchNormalization_4": {
+                    "epsilon": 0.001,
+                    "center": true,
+                    "scale": false,
+                    "momentum": 0.9,
+                    "name": "BatchNormalization_4"
+                },
+                "crelu_4": {
+                    "name": "crelu_4"
+                },
+                "Dropout": 0.4,
+                "Flatten": {
+                    "name": "Flatten"
+                },
+                "Dense": {
+                    "units": 16,
+                    "activation": "crelu",
+                    "name": "efdc_outputs"
+                },
+                "Input_1": {
+                    "shape": [
+                        2160,
+                        2
+                    ],
+                    "name": "SWMM_inputs"
+                },
+                "Flatten_2": {
+                    "config": {
+                        "name": "Flatten_2"
+                    },
+                    "inputs": "SWMM_inputs"
+                },
+                "Dense_1": {
+                    "config": {
+                        "units": 17,
+                        "activation": "crelu",
+                        "name": "Dense_1"
+                    },
+                    "inputs": "Flatten_2"
+                },
+                "Dense_2": {
+                    "config": {
+                        "units": 16,
+                        "activation": "crelu",
+                        "name": "Dense_2"
+                    },
+                    "inputs": "Dense_1"
+                },
+                "Dense_3": {
+                    "config": {
+                        "units": 16,
+                        "activation": "crelu",
+                        "name": "Dense_3"
+                    },
+                    "inputs": "Dense_2"
+                },
+                "Dense_4": {
+                    "config": {
+                        "units": 16,
+                        "activation": "crelu",
+                        "name": "swmm_outputs"
+                    },
+                    "inputs": "Dense_3"
+                },
+                "Concatenate": {
+                    "config": {
+                        "axis": 1,
+                        "name": "Concatenate"
+                    },
+                    "inputs": [
+                        "efdc_outputs",
+                        "swmm_outputs"
+                    ]
+                },
+                "Dense_5": {
+                    "config": {
+                        "units": 16,
+                        "activation": "crelu",
+                        "name": "Dense_5"
+                    },
+                    "inputs": "Concatenate"
+                },
+                "Dense_6": {
+                    "config": {
+                        "units": 16,
+                        "activation": "crelu",
+                        "name": "Dense_6"
+                    },
+                    "inputs": "Dense_5"
+                },
+                "Dense_7": {
+                    "config": {
+                        "units": 16,
+                        "activation": "crelu",
+                        "name": "Dense_7"
+                    },
+                    "inputs": "Dense_6"
+                },
+                "Dropout_2": 0.3,
+                "Dense_8": {
+                    "config": 1,
+                    "name": "model_output"
+                }
+            }
+        },
+        "composite": false,
+        "lr": 0.001345722926691647,
+        "optimizer": "Adam",
+        "loss": "mse",
+        "quantiles": null,
+        "epochs": 20000,
+        "min_val_loss": 0.0001,
+        "patience": 20000,
+        "shuffle": true,
+        "save_model": true,
+        "subsequences": 3,
+        "backend": "tensorflow",
+        "buffer_size": 100,
+        "batches_per_epoch": null,
+        "steps_per_epoch": null,
+        "metrics": [
+            "nse"
+        ],
+        "batches": "3d",
+        "prefix": null,
+        "kmodel": null,
+        "cross_validator": null,
+        "wandb_config": {},
+        "val_metric": "mse"
+    },
+    "method": null,
+    "loss": "tensorflow.python.keras.losses"
+}
