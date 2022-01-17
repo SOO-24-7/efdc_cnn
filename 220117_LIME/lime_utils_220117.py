@@ -2,6 +2,8 @@ import numpy as np
 from sklearn.metrics import r2_score # explained_variance_score, mean_squared_error, mean_absolute_error
 from ai4water.postprocessing.SeqMetrics import RegressionMetrics
 
+# this is my commnet just checking
+
 # for ss in np.arange(EFDC_tr.shape[0]): # 900개 (0~899)
 #     EFDC_tr_sam = EFDC_tr[ss:ss+1,] # (1, 3, 3, 8) = (No. of sampel, size,size,No.of features)
 #     SWMM_tr_sam = SWMM_tr[ss:ss+1,] # (1,2160, 2)
