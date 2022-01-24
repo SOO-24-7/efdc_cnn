@@ -9,7 +9,7 @@ from ai4water import Model
 from sklearn.metrics import r2_score # explained_variance_score, mean_squared_error, mean_absolute_error
 from ai4water.postprocessing.SeqMetrics import RegressionMetrics
 
-def SlctOneExample(ex_num,inp1,inp2,out): # ** Select one example (using ex_num) for perturbing
+def select_one_ex(ex_num,inp1,inp2,out): # ** Select one example (using ex_num) for perturbing
     # ex_num : example number (e.g., 100)
     # inp1 (EFDC), inp2 (SWMM), out (tox_TRUE)
     inp1_ex = np.expand_dims(inp1[ex_num], axis=0)  # EFDC_tr_sam(1, 3, 3, 8) = (No. of sampel, size,size,No.of features)
@@ -17,7 +17,7 @@ def SlctOneExample(ex_num,inp1,inp2,out): # ** Select one example (using ex_num)
     out_ex = out[ex_num]  # (1,)
     return inp1_ex, inp2_ex, out_ex
 
-def MultiFac4Pertb(low, high, n_perturb, random_state): # Generate multiplying factor for perturbation (making neighboringhood instances)
+def multiply_fac_pertb(low, high, n_perturb, random_state): # Generate multiplying factor for perturbation (making neighboringhood instances)
     rng = default_rng(random_state)  # default_rng: the recommended constructor for the random number class Generator .
     multi_fac = rng.uniform(low, high, size=n_perturb) # rng.uniform(low=0.9 high=1.1, size=100)
     return multi_fac
@@ -30,7 +30,7 @@ def build_cnn_model_from_config(default_path, config_f_path, weight_f_path): # l
 def cnn_model_predict(_model, x):  # model predction using the built CNN  model
     return _model.predict(x=x)
 
-def Make_Prtb_1d(inp,Multiple_Factor):
+def make_prtb_1d(inp,Multiple_Factor):
     inp_prtb = inp * Multiple_Factor # make new_x : perturb one example #
     inp_prtb_1d = inp_prtb.reshape(-1,)# make 1d arr
     return inp_prtb, inp_prtb_1d
@@ -38,10 +38,15 @@ def Make_Prtb_1d(inp,Multiple_Factor):
 def NpAppend():
     pass
 
-def nonzeroidx(a):
+def nonzero_idx(a):
     return [i for i, e in enumerate(a) if e != 0]
 
-def FindCoefIdxfromNZ(list1, list2): # Find where coef index comes from (No. of coef>No. of nonzero vlaue in SWMM)
+def zero_idx(a): # find idx of zero-values
+    arr = np.argwhere(a == 0)[0]
+    return arr
+
+
+def find_coefidx_from_nonzero(list1, list2): # Find where coef index comes from (No. of coef>No. of nonzero vlaue in SWMM)
     list3=[]
     for i in range(len(list1)):
         if list1[i] not in list2:
@@ -49,7 +54,11 @@ def FindCoefIdxfromNZ(list1, list2): # Find where coef index comes from (No. of 
         else : pass
     return list3, print('coef indx from nonzero input:', list3)
 
-def Revert_1d_to_ndarr(Input): # Re-packing 1darray to be original shape
+def revert_1d_to_ndarr(Input): # Re-packing 1darray to be original shape
+    if type(Input) == np.ndarray:
+        pass
+    else:
+        Input = np.array(Input) # make input ndarray
 
     if Input.ndim == 1:
         if Input.shape[0] == 72: # EFDC

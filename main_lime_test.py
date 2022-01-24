@@ -9,8 +9,10 @@ from sklearn.metrics import mean_squared_error
 from ai4water import Model
 # from ai4water.postprocessing.SeqMetrics import RegressionMetrics
 import matplotlib.pyplot as plt
-from lime_utils import SlctOneExample,MultiFac4Pertb,Revert_1d_to_ndarr,test_reshape,nonzeroidx,FindCoefIdxfromNZ
-from import_mat import ImportMatfile
+from easy_mpl import plot, imshow
+
+from lime_utils import select_one_ex, make_prtb_1d, multiply_fac_pertb, build_cnn_model_from_config, cnn_model_predict, Revert_1d_to_ndarr, test_reshape, nonzeroidx, find_coefidx_from_nonzero
+from import_mat import import_mat_file
 
 Default_PATH = os.path.join(os.getcwd())
 
@@ -28,12 +30,13 @@ random_state= 365 # rndseed num for random sampling
 config_f_path = r'20211130_123508_0.662\config.json'
 weight_f_path = r'20211130_123508_0.662\weights\weights_4014_0.01794.hdf5'
 
-for ex_num in np.arange(EFDC_tr.shape[0]): # ex_num: example number within data (0~899)
+    # for ex_num in np.arange(EFDC_tr.shape[0]): # ex_num: example number within data (0~899)
+for ex_num in np.arange(0):
     # ** Select one example (based on ex_num) for perturbing
-    EFDC_tr_ex, SWMM_tr_ex, tox_tr_ex = SlctOneExample(ex_num, EFDC_tr, SWMM_tr, tox_tr)
+    EFDC_tr_ex, SWMM_tr_ex, tox_tr_ex = select_one_ex(ex_num, EFDC_tr, SWMM_tr, tox_tr)
 
     # Step: Perturbing one example
-    multi_fac = MultiFac4Pertb(low, high, n_perturb, random_state) # Generate multiplying factor for perturbation
+    multi_fac = multiply_fac_pertb(low, high, n_perturb, random_state) # Generate multiplying factor for perturbation
 
     # CNN model build
     cnn_model = build_cnn_model_from_config(Default_PATH,config_f_path,weight_f_path) # load json and build model
@@ -43,8 +46,8 @@ for ex_num in np.arange(EFDC_tr.shape[0]): # ex_num: example number within data 
     for ii in np.arange(n_perturb):
         # ** Convert Ndarray to 1D array and perturb it **
 
-        EFDC_prtb, EFDC_prtb_1d = Make_Prtb_1d(EFDC_tr_ex,multi_fac[ii]) # EFDC_prtb(1, 3, 3, 8), EFDC_prtb_1d(72,)
-        SWMM_prtb, SWMM_prtb_1d = Make_Prtb_1d(SWMM_tr_ex, multi_fac[ii]) # SWMM_prtb(1, 2160, 2), SWMM_prtb_1d(4320,)
+        EFDC_prtb, EFDC_prtb_1d = make_prtb_1d(EFDC_tr_ex,multi_fac[ii]) # EFDC_prtb(1, 3, 3, 8), EFDC_prtb_1d(72,)
+        SWMM_prtb, SWMM_prtb_1d = make_prtb_1d(SWMM_tr_ex, multi_fac[ii]) # SWMM_prtb(1, 2160, 2), SWMM_prtb_1d(4320,)
         ## ** Concat two 1d array (EFDC, SWMM) to make linear model
         inp_prtb_1d = np.concatenate([EFDC_prtb_1d, SWMM_prtb_1d]) # (4392,) = (72,) + (4320,)
 
@@ -101,10 +104,6 @@ for ex_num in np.arange(EFDC_tr.shape[0]): # ex_num: example number within data 
     # list3 = FindCoefIdxfromNZ(NZIdx_coef_SWMM,NZIdx_inp_SWMM)
     # new_list3 = [x+72 for x in list3]
 
-    # ** 3) Revert to the orginal shape
-    # NZIdx_coef_EFDC= Make1dArrandRevert(NZIdx_coef_EFDC)
-    # NZIdx_coef_SWMM= Make1dArrandRevert(NZIdx_coef_SWMM)
-
     # normalize
     a = lr_rgr.coef_ / np.sum(lr_rgr.coef_)
     print(a.sum()) # 1.000001
@@ -115,7 +114,7 @@ for ex_num in np.arange(EFDC_tr.shape[0]): # ex_num: example number within data 
     # plotting
     plt.plot(lr_rgr.coef_)
     plt.xlabel('Input features')
-    plt.ylabel('Coefficient of linear regression')
+    plt.ylabel('Importance')
     plt.show()
 
     plt.plot(lr_rgr.coef_[0:280])
@@ -124,6 +123,18 @@ for ex_num in np.arange(EFDC_tr.shape[0]): # ex_num: example number within data 
     plt.tight_layout()
     plt.show()
 
+
+    # ** 3) Revert to the orginal shape
+    lime_EFDC= revert_1d_to_ndarr(lr_rgr.coef_[0:72])
+    NZIdx_coef_SWMM= revert_1d_to_ndarr(NZIdx_coef_SWMM)
+
+    # NZIdx_coef_EFDC = np.expand_dims(NZIdx_coef_EFDC[:, :, :, 0])
+    # NZIdx_coef_EFDC[0, :, :, 0].shape
+    imshow(lime_EFDC[0, :, :, 0],colorbar=True)
+
     # print("Accuracy: %.3f (%.3f)" % (results.mean(), results.std()))
 
     # np.savetxt('D:\\UNIST_SBKim\\B_paper\\3_[JHM]EFDC_CNN (tox)\\CNN_SB\\220116_LIME\\perturbation\\5000\\multi_fac100.txt',multi_fac_)
+
+# report performance
+# print('Accuracy: %.3f (%.3f)' % (mean(n_scores), std(n_scores)))
