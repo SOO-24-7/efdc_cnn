@@ -48,7 +48,7 @@ def zero_idx(a): # find idx of zero-values
 
 def find_coefidx_from_nonzero(list1, list2): # Find where coef index comes from (No. of coef>No. of nonzero vlaue in SWMM)
     list3=[]
-    for i in range(len(list1)):
+    for i in range(len(list1)): # In python 3.x range: iterator
         if list1[i] not in list2:
             list3.append(list1[i])
         else : pass
@@ -73,6 +73,12 @@ def revert_1d_to_ndarr(Input): # Re-packing 1darray to be original shape
 
 
 def test_reshape(Input): # Testing reshape between 1d and ndarray is completed well
+
+    if type(Input) == np.ndarray:
+        pass
+    else:
+        Input = np.array(Input) # make input ndarray
+
     Input_1d = Input.reshape(-1, )  # making 1d and copying it (1,3,3,8) -> (72,)
 
     if Input.ndim == 3:  # Input SWMM(1,2160,2): Input_1d(4320,)->Input_re(1,2160,2)
@@ -113,3 +119,8 @@ def test_reshape(Input): # Testing reshape between 1d and ndarray is completed w
 
 
 # errors = RegressionMetrics(cnn_pred, lr_rgr_pred)
+
+# imshow(check_idx_1d[0, :, :, ft_num],colorbar=True)
+
+# print("Accuracy: %.3f (%.3f)" % (results.mean(), results.std()))
+# np.savetxt('D:\\UNIST_SBKim\\B_paper\\3_[JHM]EFDC_CNN (tox)\\CNN_SB\\220116_LIME\\perturbation\\5000\\multi_fac100.txt',multi_fac_)
