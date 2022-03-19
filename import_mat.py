@@ -32,9 +32,9 @@ def import_mat_file(Default_PATH):
     tox_val = np.array(tox_val,dtype='float32')
 
     EFDC_map = np.array(EFDC_map,dtype='float32')
-    tox_map = np.array(tox_map,dtype='float32')
     SWMM_map = np.array(SWMM_map, dtype='float32')
+    tox_map = np.array(tox_map,dtype='float32')
 
     return EFDC_tr, EFDC_val, SWMM_tr, SWMM_val, \
            tox_tr, tox_val, \
-           EFDC_map, tox_map, SWMM_map
+           EFDC_map, SWMM_map, tox_map
